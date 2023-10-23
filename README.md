@@ -15,7 +15,7 @@
 
         private async UniTask InitIAP()
         {
-            IAPSendMessage.Instance().Init("IAPBridge", "AAA");
+            IAPSendMessage.Instance().Init("IAPBridge", "AAA");//参数1:预制体名字, 参数2:当前无作用 
 
             for (int i = 0; i < 30; i++)
             {
