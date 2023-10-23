@@ -8,12 +8,9 @@ unity android 原生谷歌支付
 2. 将 预制体 IAPBridge 放入场景，用来接收IAP消息
 3. 初始化IAP
    示例代码为
-        private async UniTask InitIAP()
-        {
-#if UNITY_EDITOR
-            return;
-#endif
-
+   
+            private async UniTask InitIAP()
+            {
             IAPSendMessage.Instance().Init("IAPBridge", "AAA");
 
             for (int i = 0; i < 30; i++)
