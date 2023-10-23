@@ -30,7 +30,8 @@
             Debug.Log($"IAP READY TRUE");
    
             string[] arr = new[]
-                { "item1","item2","item3"};
+                { "item1","item2","item3"}; //请求的所有商品id
+   
             IAPSendMessage.Instance().RequestProducts(arr);
             IAPSendMessage.Instance().GetRestoreProductList();
         }
@@ -38,6 +39,6 @@
 4.购买代码
     IAPSendMessage.Instance().BuyProduct("商品id", 是否是消耗品 );
 
-5.购买回调
-    在IAPReceiveMessage类中
+5.购买回调  IAPReceiveMessage类中
+6.请求的所有商品信息  IAPReceiveMessage.productInfoData
       
