@@ -35,6 +35,7 @@ unity android 原生谷歌支付
 
 4.购买代码
     IAPSendMessage.Instance().BuyProduct("商品id", 是否是消耗品 );
+
 5.购买回调
     在IAPReceiveMessage类中
       
