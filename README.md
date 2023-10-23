@@ -2,7 +2,9 @@
 unity android 原生谷歌支付
 
 
-*unity   将 IAP.unitypackage 导入unity
+## unity部分
+
+将 IAP.unitypackage 导入unity
 
 1. json解析  "com.unity.nuget.newtonsoft-json": "3.1.0"
 2. 将 预制体 IAPBridge 放入场景，用来接收IAP消息
