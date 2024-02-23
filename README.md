@@ -13,9 +13,25 @@
 3. 初始化IAP
    示例代码为
 
+    注册回调
+
+        private void InitAction()
+        {
+            IAPReceiveMessage.getInstance().OnReceiveProductInfoSuccess += OnProductInfoReceived;
+            IAPReceiveMessage.getInstance().OnReceiveProductInfoFailed += OnProductInfoFail;
+            IAPReceiveMessage.getInstance().OnBuyProductSuccess += OnProductBuyComplete;
+            IAPReceiveMessage.getInstance().OnBuyProductFailed += OnBuyProductFail;
+            IAPReceiveMessage.getInstance().OnBuyProductCanceled += OnBuyProductCanceled;
+            IAPReceiveMessage.getInstance().OnGetProvideContent += OnGetProvideContent;
+            IAPReceiveMessage.getInstance().OnGetPurchaseHistory += OnReceivePurchaseHistory;
+        }
+
+
+    请求商品
+
         private async UniTask InitIAP()
         {
-            IAPSendMessage.Instance().Init("IAPBridge", "AAA");//参数1:预制体名字, 参数2:当前无作用 
+            IAPSendMessage.Instance().Init("IAPBridge", "AAA");//参数1:预制体名字, 参数2:当前无作用
 
             for (int i = 0; i < 30; i++)
             {
@@ -30,10 +46,10 @@
             }
 
             Debug.Log($"IAP READY TRUE");
-   
+
             string[] arr = new[]
                 { "item1","item2","item3"}; //请求的所有商品id
-   
+
             IAPSendMessage.Instance().RequestProducts(arr);
             IAPSendMessage.Instance().GetRestoreProductList();
         }
@@ -43,4 +59,3 @@
 5.购买回调  IAPReceiveMessage类中
 
 6.请求的所有商品信息  IAPReceiveMessage.productInfoData
-      
