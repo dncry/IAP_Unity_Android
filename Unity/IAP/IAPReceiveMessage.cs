@@ -1,27 +1,30 @@
-﻿using System;
+using System;
 using UnityEngine;
 using Newtonsoft.Json;
+using UnityGameFramework.Runtime;
 
 namespace IAP
 {
+    [Serializable]
+    public class IAPBuyCompleteData
+    {
+        public string productId;
+        public string originalJson;
+        public string signature;
+    }
+
+    [Serializable]
+    public class IAPBuyFailData
+    {
+        public string productId;
+        public string error;
+    }
+
     /// <summary>
     /// 该类主要用于接收iOS和Android回调，做一个桥接用途
     /// </summary>
     public class IAPReceiveMessage : MonoBehaviour
     {
-        class BuyCompleteData
-        {
-            public string productId;
-            public string originalJson;
-            public string signature;
-        }
-
-        class BuyFailData
-        {
-            public string productId;
-            public string error;
-        }
-
         public Action<IAPProductInfoData> OnReceiveProductInfoSuccess;
         public Action<string> OnReceiveProductInfoFailed;
         public Action<string, string, string> OnBuyProductSuccess;
@@ -46,7 +49,7 @@ namespace IAP
         }
 
 
-       #region callback from Objective-c/JAR
+        #region callback from Objective-c/JAR
 
         //获取到产品列表回调
         void ReceiveProductInfos(string jsonData)
@@ -75,7 +78,7 @@ namespace IAP
         {
             Debug.Log($"购买成功-{jsonData}");
 
-            var infoData = JsonConvert.DeserializeObject<BuyCompleteData>(jsonData);
+            var infoData = JsonConvert.DeserializeObject<IAPBuyCompleteData>(jsonData);
 
             OnBuyProductSuccess?.Invoke(infoData.productId, infoData.originalJson, infoData.signature);
         }
@@ -85,7 +88,7 @@ namespace IAP
         {
             Debug.Log($"购买失败-{jsonData}");
 
-            var infoData = JsonConvert.DeserializeObject<BuyFailData>(jsonData);
+            var infoData = JsonConvert.DeserializeObject<IAPBuyFailData>(jsonData);
             OnBuyProductFailed?.Invoke(infoData.productId, infoData.error);
         }
 
