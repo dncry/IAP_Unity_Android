@@ -45,7 +45,7 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
     private Map<String, ProductDetails> skuDetailsLiveDataMap2 = new HashMap<>();
     private Map<String, SkuDetails> skuDetailsLiveDataMap = new HashMap<>();
     private boolean isConsumable;
-    private String buyProductId;
+
     private boolean billingSetupComplete = false;
     // how long before the data source tries to reconnect to Google play
     private long reconnectMilliseconds = RECONNECT_TIMER_START_MILLISECONDS;
@@ -216,7 +216,7 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
 
                     //String price = detail.getOneTimePurchaseOfferDetails().getFormattedPrice();
 
-                    double price = ((double)( detail.getOneTimePurchaseOfferDetails().getPriceAmountMicros()))/1000000 ;
+                    double price = ((double) (detail.getOneTimePurchaseOfferDetails().getPriceAmountMicros())) / 1000000;
                     String formatPrice = detail.getOneTimePurchaseOfferDetails().getFormattedPrice();
                     //String formatPrice = price;
 
@@ -261,8 +261,9 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
                     }
                     skuDetailsLiveDataMap.put(productId, detail);
 
-                    double price =((double)(detail.getPriceAmountMicros()))/ 1000000 ;    ;
-                    String formatPrice =  detail.getOriginalPrice();
+                    double price = ((double) (detail.getPriceAmountMicros())) / 1000000;
+                    ;
+                    String formatPrice = detail.getOriginalPrice();
 
                     SkuItem skuItem = new SkuItem();
                     skuItem.productId = productId;
@@ -297,7 +298,6 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
 
             ProductDetails skuDetails = skuDetailsLiveDataMap2.get(productId);
             if (null != skuDetails) {
-                buyProductId = productId;
                 this.isConsumable = isConsumable;
 
                 ArrayList<BillingFlowParams.ProductDetailsParams> productParamsArrayList = new ArrayList<>();
@@ -321,7 +321,6 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
 
             SkuDetails skuDetails = skuDetailsLiveDataMap.get(productId);
             if (null != skuDetails) {
-                buyProductId = productId;
                 this.isConsumable = isConsumable;
 
                 BillingFlowParams purchaseParams =
@@ -363,8 +362,9 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
     public void onPurchasesUpdated(@NonNull BillingResult billingResult, @Nullable List<Purchase> list) {
         int responseCode = billingResult.getResponseCode();
 
-        PrintLog("BillingResult [" + GetResponseText(responseCode) + "]: "
-                + billingResult.getDebugMessage());
+        PrintLog("BillingResult [" + GetResponseText(responseCode) + "]: " + billingResult.toString()
+                + "END");
+
         switch (responseCode) {
             case BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED:
 
@@ -372,14 +372,22 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
                 FlowFinish(true, null, list);
                 break;
             case BillingClient.BillingResponseCode.USER_CANCELED:
-                String productId = buyProductId;
-                buyProductId = null;
-                BuyCancel(productId);
+                BuyCancel(getFirstProductId(list));
                 break;
             default:
                 FlowFinish(false, billingResult.getDebugMessage(), list);
                 break;
         }
+    }
+
+
+    @Nullable
+    public String getFirstProductId(@Nullable List<Purchase> purchaseList) {
+        if (purchaseList != null && !purchaseList.isEmpty()) {
+            Purchase firstPurchase = purchaseList.get(0);
+            return firstPurchase.getProducts().get(0); // 如果使用的是较新版本的Google Play Billing库，可能需要使用 firstPurchase.getProductId()
+        }
+        return null; // 返回null表示列表为空或null
     }
 
 
@@ -417,131 +425,122 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
 
         if (isSuccess) {
 
-            if (purchases==null  || purchases.size() == 0){
+            if (purchases == null || purchases.size() == 0) {
                 CallBackBuyFail(message);
                 return;
             }
 
+            String productId = getFirstProductId(purchases);
+            String purchaseToken = null;
 
-            if (buyProductId != null) {
-                String productId = buyProductId;
-                buyProductId = null;
-                String purchaseToken = null;
+            String originalJson = null;
+            String signature = null;
 
-                String originalJson = null;
-                String signature = null;
-
-                if (isNewStoreVersion) {
-                    for (Purchase purchase : purchases) {
-
-                        if (purchase.getProducts()==null  || purchase.getProducts().size() == 0){
-                            CallBackBuyFail(message);
-                            return;
-                        }
-
-                        for (String skus : purchase.getProducts()) {
-                            //需要校验付款状态
-                            if (skus.contains(productId) &&
-                                    purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
-                                purchaseToken = purchase.getPurchaseToken();
-                                originalJson = purchase.getOriginalJson();
-                                signature = purchase.getSignature();
-
-                                break;
-                            }
-                            if (purchaseToken != null) break;
-                        }
-                    }
-                }
-                else {
-
-                    for (Purchase purchase : purchases) {
-
-                        if (purchase.getSkus()==null  || purchase.getSkus().size() == 0){
-                            CallBackBuyFail(message);
-                            return;
-                        }
-
-                        for (String skus : purchase.getSkus()) {
-                            //需要校验付款状态
-                            if (skus.contains(productId) &&
-                                    purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
-                                purchaseToken = purchase.getPurchaseToken();
-                                originalJson = purchase.getOriginalJson();
-                                signature = purchase.getSignature();
-
-                                break;
-                            }
-                            if (purchaseToken != null) break;
-                        }
+            if (isNewStoreVersion) {
+                for (Purchase purchase : purchases) {
+                    if (purchase.getProducts() == null || purchase.getProducts().size() == 0) {
+                        CallBackBuyFail(message);
+                        return;
                     }
 
+                    for (String skus : purchase.getProducts()) {
+                        //需要校验付款状态
+                        if (skus.contains(productId) &&
+                                purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+                            purchaseToken = purchase.getPurchaseToken();
+                            originalJson = purchase.getOriginalJson();
+                            signature = purchase.getSignature();
 
+                            break;
+                        }
+                        if (purchaseToken != null) break;
+                    }
+                }
+            } else {
+
+                for (Purchase purchase : purchases) {
+
+                    if (purchase.getSkus() == null || purchase.getSkus().size() == 0) {
+                        CallBackBuyFail(message);
+                        return;
+                    }
+
+                    for (String skus : purchase.getSkus()) {
+                        //需要校验付款状态
+                        if (skus.contains(productId) &&
+                                purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+                            purchaseToken = purchase.getPurchaseToken();
+                            originalJson = purchase.getOriginalJson();
+                            signature = purchase.getSignature();
+
+                            break;
+                        }
+                        if (purchaseToken != null) break;
+                    }
                 }
 
 
-                if (isConsumable) {
-                    if (purchaseToken == null) {
-                        CallBackBuyFail("unknown purchaseToken:" + productId);
-                    } else {
-                        ConsumeParams consumeParams =
-                                ConsumeParams.newBuilder()
-                                        .setPurchaseToken(purchaseToken)
-                                        .build();
+            }
 
-                        String finalOriginalJson = originalJson;
-                        String finalSignature = signature;
 
-                        billingClient.consumeAsync(consumeParams, (billingResult, token) -> {
+            if (isConsumable) {
+                if (purchaseToken == null) {
+                    CallBackBuyFail("unknown purchaseToken:" + productId);
+                } else {
+                    ConsumeParams consumeParams =
+                            ConsumeParams.newBuilder()
+                                    .setPurchaseToken(purchaseToken)
+                                    .build();
+
+                    String finalOriginalJson = originalJson;
+                    String finalSignature = signature;
+
+                    billingClient.consumeAsync(consumeParams, (billingResult, token) -> {
+                        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                            BuyComplete(productId, finalOriginalJson, finalSignature);
+                        } else {
+                            CallBackBuyFail(billingResult.getDebugMessage());
+                        }
+                    });
+
+                }
+            } else {
+
+                if (purchaseToken == null) {
+                    CallBackBuyFail("unknown purchaseToken:" + productId);
+                } else {
+
+                    AcknowledgePurchaseParams acknowledgePurchaseParams =
+                            AcknowledgePurchaseParams.newBuilder()
+                                    .setPurchaseToken(purchaseToken)
+                                    .build();
+
+                    String finalOriginalJson = originalJson;
+                    String finalSignature = signature;
+
+                    AcknowledgePurchaseResponseListener acknowledgePurchaseResponseListener = new AcknowledgePurchaseResponseListener() {
+                        @Override
+                        public void onAcknowledgePurchaseResponse(@NonNull BillingResult billingResult) {
                             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                                 BuyComplete(productId, finalOriginalJson, finalSignature);
                             } else {
                                 CallBackBuyFail(billingResult.getDebugMessage());
                             }
-                        });
-
-                    }
-                } else {
-
-                    if (purchaseToken == null) {
-                        CallBackBuyFail("unknown purchaseToken:" + productId);
-                    } else {
-
-                        AcknowledgePurchaseParams acknowledgePurchaseParams =
-                                AcknowledgePurchaseParams.newBuilder()
-                                        .setPurchaseToken(purchaseToken)
-                                        .build();
-
-                        String finalOriginalJson = originalJson;
-                        String finalSignature = signature;
-
-                        AcknowledgePurchaseResponseListener acknowledgePurchaseResponseListener = new AcknowledgePurchaseResponseListener() {
-                            @Override
-                            public void onAcknowledgePurchaseResponse(@NonNull BillingResult billingResult) {
-                                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                                    BuyComplete(productId, finalOriginalJson, finalSignature);
-                                } else {
-                                    CallBackBuyFail(billingResult.getDebugMessage());
-                                }
-                            }
-                        };
-                        billingClient.acknowledgePurchase(acknowledgePurchaseParams, acknowledgePurchaseResponseListener);
-                    }
-
+                        }
+                    };
+                    billingClient.acknowledgePurchase(acknowledgePurchaseParams, acknowledgePurchaseResponseListener);
                 }
+
             }
+
         } else {
-            if (buyProductId != null) {
-                CallBackBuyFail(message);
-            }
+            CallBackBuyFail(message);
         }
     }
 
     private void CallBackBuyFail(String message) {
-        String productId = buyProductId;
-        buyProductId = null;
-        BuyFail(productId, message);
-        PrintLog("Error purchasing: " + message);
+        BuyFail("ABC", message);
+
     }
 
     @Override

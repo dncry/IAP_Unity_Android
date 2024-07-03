@@ -115,9 +115,9 @@ public class BaseMainActivity {
 
 
     protected void BuyComplete(String productId, String originalJson, String signature) {
-        PrintLog("购买成功：" + productId);
-        PrintLog("IAP originalJson: " + originalJson);
-        PrintLog("IAP signature: " + signature);
+        PrintLog("java-  购买成功：" + productId);
+        PrintLog("java-  IAP originalJson: " + originalJson);
+        PrintLog("java-  IAP signature: " + signature);
 
         try {
             JSONObject jObject = new JSONObject();
@@ -133,12 +133,12 @@ public class BaseMainActivity {
     }
 
     protected void BuyCancel(String productId) {
-        PrintLog("购买取消：" + productId);
+        PrintLog("java-  购买取消：" + productId);
         SendUnityMessage("ProductBuyCanceled", productId);
     }
 
     protected void BuyFail(String productId, String error) {
-        PrintLog("购买失败：" + productId + "原因：" + error);
+        PrintLog("java-  购买失败：" + productId + "原因：" + error);
         try {
             JSONObject jObject = new JSONObject();
             jObject.put("productId", productId);
@@ -251,4 +251,6 @@ public class BaseMainActivity {
         }
         return unityActivity;
     }
+
+
 }
