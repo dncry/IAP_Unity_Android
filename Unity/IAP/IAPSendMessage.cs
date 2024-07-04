@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using Newtonsoft.Json;
 
@@ -58,7 +58,7 @@ namespace IAP
         {
             //publicKey未起作用
 
-            Debug.Log("[IAPBridge]Init：" + goName + "=====" + publicKey);
+            Debug.Log("unity- [IAPBridge]Init：" + goName + "=====" + publicKey);
             if (Application.platform != RuntimePlatform.Android)
                 return;
             javaObject.Call("Init", goName, publicKey);
@@ -78,14 +78,14 @@ namespace IAP
             iapBuyProductData.productIds = productIds;
             string jsonData = JsonConvert.SerializeObject(iapBuyProductData);
 
-            Debug.Log($"请求产品列表{jsonData}");
+            Debug.Log($"unity-  请求产品列表{jsonData}");
 
             RequestProducts(jsonData);
         }
 
         private void RequestProducts(string jsonData)
         {
-            Debug.Log("[IAPBridge]RequestProduct：" + jsonData);
+            Debug.Log("unity-[IAPBridge]RequestProduct：" + jsonData);
             if (Application.platform != RuntimePlatform.Android)
                 return;
             javaObject.Call("RequestProduct", jsonData);
@@ -97,7 +97,7 @@ namespace IAP
             iapBuyProductData.productId = productId;
             iapBuyProductData.isConsumable = isConsumable;
             string jsonData = JsonConvert.SerializeObject(iapBuyProductData);
-            Debug.Log("[IAPBridge]BuyProduct：" + jsonData);
+            Debug.Log("unity-[IAPBridge]BuyProduct：" + jsonData);
             if (Application.platform != RuntimePlatform.Android)
                 return;
             javaObject.Call("BuyProduct", jsonData);

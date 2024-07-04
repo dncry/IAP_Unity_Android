@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using Newtonsoft.Json;
 using UnityGameFramework.Runtime;
@@ -54,13 +54,12 @@ namespace IAP
         //获取到产品列表回调
         void ReceiveProductInfos(string jsonData)
         {
-            Debug.Log($"获取产品列表成功-{jsonData}");
-
-
+            Debug.Log($"unity-  获取产品列表成功-{jsonData}");
+            
             if (string.IsNullOrEmpty(jsonData)) return;
             var infoData = JsonConvert.DeserializeObject<IAPProductInfoData>(jsonData);
 
-            Debug.Log($"获取产品列表成功-{infoData.skuItems[0].productId}");
+            Debug.Log($"unity-  获取产品列表成功-{infoData.skuItems[0].productId}");
 
             OnReceiveProductInfoSuccess?.Invoke(infoData);
         }
@@ -68,7 +67,7 @@ namespace IAP
         //产品列表请求失败
         void ProductRequestFail(string message)
         {
-            Debug.Log($"获取产品列表失败");
+            Debug.Log($"unity-  获取产品列表失败");
 
             OnReceiveProductInfoFailed?.Invoke(message);
         }
@@ -76,7 +75,7 @@ namespace IAP
         //购买成功回调
         void ProductBuyComplete(string jsonData)
         {
-            Debug.Log($"购买成功-{jsonData}");
+            Debug.Log($"unity-  购买成功-{jsonData}");
 
             var infoData = JsonConvert.DeserializeObject<IAPBuyCompleteData>(jsonData);
 
@@ -86,7 +85,7 @@ namespace IAP
         //购买失败回调
         void ProductBuyFailed(string jsonData)
         {
-            Debug.Log($"购买失败-{jsonData}");
+            Debug.Log($"unity-  购买失败-{jsonData}");
 
             var infoData = JsonConvert.DeserializeObject<IAPBuyFailData>(jsonData);
             OnBuyProductFailed?.Invoke(infoData.productId, infoData.error);
@@ -96,7 +95,7 @@ namespace IAP
         //购买取消回调
         void ProductBuyCanceled(string productId)
         {
-            Debug.Log($"购买取消-{productId}");
+            Debug.Log($"unity-  购买取消-{productId}");
 
             OnBuyProductCanceled?.Invoke(productId);
         }
@@ -104,7 +103,7 @@ namespace IAP
         //获取商品回执回调
         void ProvideContent(string msg)
         {
-            Debug.Log($"获取商品回执-{msg}");
+            Debug.Log($"unity-  获取商品回执-{msg}");
 
             OnGetProvideContent?.Invoke(msg);
         }
@@ -112,7 +111,7 @@ namespace IAP
         //购买记录
         void ReceivePurchaseHistory(string productIdList)
         {
-            Debug.Log($"购买记录-{productIdList}");
+            Debug.Log($"unity-  购买记录-{productIdList}");
 
             var idGroup = productIdList.Split('+');
             OnGetPurchaseHistory?.Invoke(idGroup);

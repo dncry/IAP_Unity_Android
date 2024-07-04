@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace IAP
 {
+    [Serializable]
     public class IAPProductInfoData
     {
         public List<IAPSkuItem> skuItems; //请求到的产品列表
         public string[] invalidIds; //无效产品id
     }
-
+    
+    [Serializable]
     public struct IAPSkuItem
     {
         public string productId; //后台产品id
@@ -26,6 +29,7 @@ namespace IAP
         }
     }
 
+    [Serializable]
     public struct IAPProvideData
     {
         public string cfgId;
