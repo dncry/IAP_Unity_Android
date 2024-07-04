@@ -85,7 +85,7 @@ namespace IAP
 
         private void RequestProducts(string jsonData)
         {
-            Debug.Log("unity-[IAPBridge]RequestProduct：" + jsonData);
+            Debug.Log("unity-  [IAPBridge]RequestProduct：" + jsonData);
             if (Application.platform != RuntimePlatform.Android)
                 return;
             javaObject.Call("RequestProduct", jsonData);
@@ -97,7 +97,7 @@ namespace IAP
             iapBuyProductData.productId = productId;
             iapBuyProductData.isConsumable = isConsumable;
             string jsonData = JsonConvert.SerializeObject(iapBuyProductData);
-            Debug.Log("unity-[IAPBridge]BuyProduct：" + jsonData);
+            Debug.Log("unity-  [IAPBridge]BuyProduct：" + jsonData);
             if (Application.platform != RuntimePlatform.Android)
                 return;
             javaObject.Call("BuyProduct", jsonData);
@@ -109,5 +109,14 @@ namespace IAP
                 return;
             javaObject.Call("GetRestoreProductList");
         }
+
+
+        public void CompleteUnfinishedProductList()
+        {
+            if (Application.platform != RuntimePlatform.Android)
+                return;
+            javaObject.Call("CompleteUnfinishedProductList");
+        }
+        
     }
 }

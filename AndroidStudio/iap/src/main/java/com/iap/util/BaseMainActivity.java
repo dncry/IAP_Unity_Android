@@ -101,6 +101,11 @@ public class BaseMainActivity {
         OnPurchaseHistory();
     }
 
+    final public void CompleteUnfinishedProductList() {
+
+        OnCompleteUnfinishedProductList();
+    }
+
 
     protected void OnInitHandle(String googlePlayPublicKey) {
     }
@@ -115,6 +120,9 @@ public class BaseMainActivity {
 
     }
 
+    protected void OnCompleteUnfinishedProductList() {
+
+    }
 
     protected void BuyComplete(String productId, String originalJson, String signature) {
         PrintLog("java-  购买成功：" + productId);

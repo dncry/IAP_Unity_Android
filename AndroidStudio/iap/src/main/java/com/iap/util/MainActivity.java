@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends BaseMainActivity implements PurchasesUpdatedListener, BillingClientStateListener, PurchasesResponseListener {
+public class MainActivity extends BaseMainActivity implements PurchasesUpdatedListener, BillingClientStateListener, PurchasesResponseListener, PurchaseHistoryResponseListener {
     private static final long RECONNECT_TIMER_START_MILLISECONDS = 1L * 1000L;
     private static final long RECONNECT_TIMER_MAX_TIME_MILLISECONDS = 1000L * 60L * 15L; // 15 mins
 
@@ -474,19 +474,26 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
 
     }
 
+    @Override
     protected void OnPurchaseHistory() {
-
-//        QueryPurchaseHistoryParams.Builder builder = QueryPurchaseHistoryParams.newBuilder();
-//        builder.setProductType("inapp");
-//
-//        billingClient.queryPurchaseHistoryAsync(
-//                builder.build(), this
-//        );
 
         QueryPurchasesParams.Builder builder = QueryPurchasesParams.newBuilder();
         builder.setProductType("inapp");
 
         billingClient.queryPurchasesAsync(
+                builder.build(), this
+        );
+
+    }
+
+
+    @Override
+    protected void OnCompleteUnfinishedProductList() {
+
+        QueryPurchaseHistoryParams.Builder builder = QueryPurchaseHistoryParams.newBuilder();
+        builder.setProductType("inapp");
+
+        billingClient.queryPurchaseHistoryAsync(
                 builder.build(), this
         );
 
@@ -531,6 +538,7 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
 
     @Override
     public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+
         int responseCode = billingResult.getResponseCode();
         String debugMessage = billingResult.getDebugMessage();
 
@@ -542,8 +550,8 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
                 billingSetupComplete = true;
                 break;
             case BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE:
+                break;
             case BillingClient.BillingResponseCode.BILLING_UNAVAILABLE:
-                PrintLog("java-  Billing Service Unavailable:" + debugMessage, false);
                 break;
             default:
                 retryBillingServiceConnectionWithExponentialBackoff();
@@ -573,9 +581,17 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
             }
         }
 
+        PrintLog("java-   IAP购买历史记录:" + str);
+
         SendPurchaseHistory(str);
 
-        PrintLog("java-   IAP购买历史记录:" + str);
+    }
+
+    @Override
+    public void onPurchaseHistoryResponse(@NonNull BillingResult billingResult, @Nullable List<PurchaseHistoryRecord> list) {
+
+        PrintLog("java-   未完成购买恢复:");
+
     }
 
 
