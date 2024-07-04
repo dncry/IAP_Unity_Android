@@ -26,7 +26,9 @@ public class BaseMainActivity {
     private Context context;
 
     public void Init(final String goName, final String googlePlayPublicKey) {
-        PrintLog("Init：" + goName + "====" + googlePlayPublicKey);
+
+        PrintLog("java-  Init：" + goName + "====" + googlePlayPublicKey);
+
         uiHandler.post(new Runnable() {
 
             @Override
@@ -65,12 +67,12 @@ public class BaseMainActivity {
                         realProducts[i] = jArray.getString(i);
                     }
                 } catch (Exception e) {
-                    PrintLog("RequestProduct数据传输错误：" + e.getMessage());
+                    PrintLog("java-  RequestProduct数据传输错误：" + e.getMessage());
                 }
                 if (realProducts != null) {
                     OnRequestProduct(realProducts);
                 } else {
-                    RequestProductsFail("数据解析错误：" + idsJson);
+                    RequestProductsFail("java-  数据解析错误：" + idsJson);
                 }
             }
         });
@@ -88,7 +90,7 @@ public class BaseMainActivity {
 
                     OnBuyProduct(productId, isConsumable);
                 } catch (Exception e) {
-                    PrintLog("BuyProduct数据传输错误：" + e.getMessage());
+                    PrintLog("java-  BuyProduct数据传输错误：" + e.getMessage());
                 }
             }
         });
@@ -126,7 +128,7 @@ public class BaseMainActivity {
             jObject.put("signature", signature);
             SendUnityMessage("ProductBuyComplete", jObject.toString());
         } catch (JSONException e) {
-            PrintLog("BuyFail数据错误：" + e.getMessage());
+            PrintLog("java-  BuyFail数据错误：" + e.getMessage());
         }
 
 
@@ -138,14 +140,16 @@ public class BaseMainActivity {
     }
 
     protected void BuyFail(String productId, String error) {
+
         PrintLog("java-  购买失败：" + productId + "原因：" + error);
+
         try {
             JSONObject jObject = new JSONObject();
             jObject.put("productId", productId);
             jObject.put("error", error);
             SendUnityMessage("ProductBuyFailed", jObject.toString());
         } catch (JSONException e) {
-            PrintLog("BuyFail数据错误：" + e.getMessage());
+            PrintLog("java-  BuyFail数据错误：" + e.getMessage());
         }
     }
 
@@ -184,10 +188,10 @@ public class BaseMainActivity {
             jsonObject.put("skuItems", skuArray);
             jsonObject.put("invalidIds", invalidArray);
         } catch (JSONException e) {
-            PrintLog("Json数据错误：" + e.getMessage());
+            PrintLog("java-  Json数据错误：" + e.getMessage());
         }
         String info = jsonObject.toString();
-        PrintLog("当前产品信息：" + info);
+        PrintLog("java-  当前产品信息：" + info);
         SendUnityMessage("ReceiveProductInfos", info);
     }
 
