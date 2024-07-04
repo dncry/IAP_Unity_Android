@@ -1,21 +1,25 @@
-﻿using UnityEngine;
+using System;
+using UnityEngine;
 using Newtonsoft.Json;
 
 namespace IAP
 {
+    [Serializable]
+    public class IAPBuyProductData
+    {
+        public string productId;
+        public bool isConsumable;
+    }
+
+    [Serializable]
+    public class IAPBuyProductData2
+    {
+        public string[] productIds;
+    }
+
+    [Serializable]
     public class IAPSendMessage
     {
-        class BuyProductData
-        {
-            public string productId;
-            public bool isConsumable;
-        }
-
-        class BuyProductData2
-        {
-            public string[] productIds;
-        }
-
         private AndroidJavaObject javaObject;
 
         private IAPSendMessage()
@@ -28,7 +32,7 @@ namespace IAP
         private volatile static IAPSendMessage _instance = null;
         private static readonly object lockHelper = new object();
 
-        public static IAPSendMessage Instance()
+        public static IAPSendMessage getInstance()
         {
             if (_instance == null)
             {
@@ -52,7 +56,7 @@ namespace IAP
         /// </summary>
         public void Init(string goName, string publicKey)
         {
-            //publicKey 当前无作用
+            //publicKey未起作用
 
             Debug.Log("[IAPBridge]Init：" + goName + "=====" + publicKey);
             if (Application.platform != RuntimePlatform.Android)
@@ -70,11 +74,11 @@ namespace IAP
 
         public void RequestProducts(string[] productIds)
         {
-            BuyProductData2 buyProductData = new BuyProductData2();
-            buyProductData.productIds = productIds;
-            string jsonData = JsonConvert.SerializeObject(buyProductData);
+            IAPBuyProductData2 iapBuyProductData = new IAPBuyProductData2();
+            iapBuyProductData.productIds = productIds;
+            string jsonData = JsonConvert.SerializeObject(iapBuyProductData);
 
-            Debug.Log(jsonData);
+            Debug.Log($"请求产品列表{jsonData}");
 
             RequestProducts(jsonData);
         }
@@ -89,10 +93,10 @@ namespace IAP
 
         public void BuyProduct(string productId, bool isConsumable)
         {
-            BuyProductData buyProductData = new BuyProductData();
-            buyProductData.productId = productId;
-            buyProductData.isConsumable = isConsumable;
-            string jsonData = JsonConvert.SerializeObject(buyProductData);
+            IAPBuyProductData iapBuyProductData = new IAPBuyProductData();
+            iapBuyProductData.productId = productId;
+            iapBuyProductData.isConsumable = isConsumable;
+            string jsonData = JsonConvert.SerializeObject(iapBuyProductData);
             Debug.Log("[IAPBridge]BuyProduct：" + jsonData);
             if (Application.platform != RuntimePlatform.Android)
                 return;
