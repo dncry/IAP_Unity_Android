@@ -52,6 +52,10 @@
 
             IAPSendMessage.Instance().RequestProducts(arr);
             IAPSendMessage.Instance().GetRestoreProductList();
+
+            await UniTask.Delay(TimeSpan.FromSeconds(5f));
+
+            IAPSendMessage.getInstance().CompleteUnfinishedProductList();
         }
 
 4.购买代码  IAPSendMessage.Instance().BuyProduct("商品id", 是否是消耗品 );
