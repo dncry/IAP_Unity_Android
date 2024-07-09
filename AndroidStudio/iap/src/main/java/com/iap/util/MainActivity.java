@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends BaseMainActivity implements PurchasesUpdatedListener, BillingClientStateListener, PurchasesResponseListener, PurchaseHistoryResponseListener {
+public class MainActivity extends BaseMainActivity implements PurchasesUpdatedListener, BillingClientStateListener {
     private static final long RECONNECT_TIMER_START_MILLISECONDS = 1L * 1000L;
     private static final long RECONNECT_TIMER_MAX_TIME_MILLISECONDS = 1000L * 60L * 15L; // 15 mins
 
@@ -481,7 +481,12 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
         builder.setProductType("inapp");
 
         billingClient.queryPurchasesAsync(
-                builder.build(), this
+                builder.build(), new PurchasesResponseListener() {
+                    @Override
+                    public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
+                        onQueryPurchasesResponse1(billingResult,list);
+                    }
+                }
         );
 
     }
@@ -490,11 +495,23 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
     @Override
     protected void OnCompleteUnfinishedProductList() {
 
-        QueryPurchaseHistoryParams.Builder builder = QueryPurchaseHistoryParams.newBuilder();
+//        QueryPurchaseHistoryParams.Builder builder = QueryPurchaseHistoryParams.newBuilder();
+//        builder.setProductType("inapp");
+//
+//        billingClient.queryPurchaseHistoryAsync(
+//                builder.build(), this
+//        );
+
+        QueryPurchasesParams.Builder builder = QueryPurchasesParams.newBuilder();
         builder.setProductType("inapp");
 
-        billingClient.queryPurchaseHistoryAsync(
-                builder.build(), this
+        billingClient.queryPurchasesAsync(
+                builder.build(), new PurchasesResponseListener() {
+                    @Override
+                    public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
+                        onQueryPurchasesResponse2(billingResult,list);
+                    }
+                }
         );
 
     }
@@ -559,13 +576,15 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
         }
     }
 
-    @Override
-    public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
+
+    public void onQueryPurchasesResponse1(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
 
         String str = "";
 
         if (list != null && list.size() != 0) {
             for (int i = 0; i < list.size(); i++) {
+
+                if (!list.get(i).isAcknowledged()){continue;}
 
                 List<String> list2 = list.get(i).getProducts();
 
@@ -587,11 +606,38 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
 
     }
 
-    @Override
-    public void onPurchaseHistoryResponse(@NonNull BillingResult billingResult, @Nullable List<PurchaseHistoryRecord> list) {
 
-        PrintLog("java-   未完成购买恢复:");
+    public void onQueryPurchasesResponse2(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
 
+        List<Purchase> purchaseList = new ArrayList<>();
+
+        String str = "";
+
+        if (list != null && list.size() != 0) {
+            for (int i = 0; i < list.size(); i++) {
+
+                if (list.get(i).isAcknowledged()){continue;}
+
+                List<String> list2 = list.get(i).getProducts();
+
+                for (int j = 0; j < list2.size(); j++) {
+
+
+                    if (!(i == 0 && j == 0)) {
+                        str += "+";
+                    }
+                    str += (list2.get(j).toString());
+
+                }
+
+                purchaseList.add(list.get(i));
+
+            }
+        }
+
+        PrintLog("java-   未完成购买恢复:" + str);
+
+        FlowFinish(true, null, purchaseList);
     }
 
 
