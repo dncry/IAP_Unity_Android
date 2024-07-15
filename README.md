@@ -1,5 +1,5 @@
 # IAP_Unity_Android
-* unity android 原生谷歌支付
+* unity android **原生**谷歌支付
 
 
 ## unity部分
