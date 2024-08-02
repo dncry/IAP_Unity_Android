@@ -53,7 +53,10 @@
             string[] arr = new[]
                 { "item1","item2","item3"}; //请求的所有商品id
 
-            IAPSendMessage.Instance().RequestProducts(arr);
+            string[] arr2 = new[]
+                { "item1","item2"}; //非消耗品的商品id
+
+            IAPSendMessage.Instance().RequestProducts(arr,aar2);
             IAPSendMessage.Instance().GetRestoreProductList();
 
             await UniTask.Delay(TimeSpan.FromSeconds(5f));
@@ -61,7 +64,7 @@
             IAPSendMessage.getInstance().CompleteUnfinishedProductList();
         }
 
-4.购买代码:  `IAPSendMessage.Instance().BuyProduct("商品id", 是否是消耗品 );`
+4.购买代码:  `IAPSendMessage.Instance().BuyProduct("商品id");`
 
 5.购买回调:  `IAPReceiveMessage` 类中
 
