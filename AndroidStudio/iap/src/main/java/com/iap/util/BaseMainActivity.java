@@ -25,6 +25,26 @@ public class BaseMainActivity {
     private Activity unityActivity;
     private Context context;
 
+
+    private String[] notConsumableProductIds = null;
+
+
+    public boolean isNotConsumableProductId(String productId) {
+
+        if (notConsumableProductIds == null) {
+            return false; // 如果数组是null，直接返回false
+        }
+
+        for (String id : notConsumableProductIds) {
+            if (id.equals(productId)) {
+                return true; // 如果找到匹配的ID，返回true
+            }
+        }
+
+        return false; // 如果没有找到匹配的ID，返回false
+    }
+
+
     public void Init(final String goName, final String googlePlayPublicKey) {
 
         PrintLog("java-  Init：" + goName + "====" + googlePlayPublicKey);
@@ -66,6 +86,13 @@ public class BaseMainActivity {
                     for (int i = 0; i < jArray.length(); i++) {
                         realProducts[i] = jArray.getString(i);
                     }
+
+                    JSONArray jArray2 = jObject.getJSONArray("notConsumableProductIds");
+                    notConsumableProductIds = new String[jArray2.length()];
+                    for (int i = 0; i < jArray2.length(); i++) {
+                        notConsumableProductIds[i] = jArray2.getString(i);
+                    }
+
                 } catch (Exception e) {
                     PrintLog("java-  RequestProduct数据传输错误：" + e.getMessage());
                 }
@@ -78,6 +105,9 @@ public class BaseMainActivity {
         });
     }
 
+
+
+
     final public void BuyProduct(final String productJson) {
         uiHandler.post(new Runnable() {
 
@@ -87,8 +117,7 @@ public class BaseMainActivity {
                     JSONObject jObject = new JSONObject(productJson);
                     String productId = jObject.getString("productId");
                     boolean isConsumable = jObject.getBoolean("isConsumable");
-
-                    OnBuyProduct(productId, isConsumable);
+                    OnBuyProduct(productId);
                 } catch (Exception e) {
                     PrintLog("java-  BuyProduct数据传输错误：" + e.getMessage());
                 }
@@ -107,13 +136,14 @@ public class BaseMainActivity {
     }
 
 
+
     protected void OnInitHandle(String googlePlayPublicKey) {
     }
 
     protected void OnRequestProduct(String[] productId) {
     }
 
-    protected void OnBuyProduct(String productId, boolean isConsumable) {
+    protected void OnBuyProduct(String productId) {
     }
 
     protected void OnPurchaseHistory() {

@@ -8,13 +8,13 @@ namespace IAP
     public class IAPBuyProductData
     {
         public string productId;
-        public bool isConsumable;
     }
 
     [Serializable]
     public class IAPBuyProductData2
     {
         public string[] productIds;
+        public string[] notConsumableProductIds;
     }
 
     [Serializable]
@@ -72,16 +72,18 @@ namespace IAP
         }
 
 
-        public void RequestProducts(string[] productIds)
+        public void RequestProducts(string[] productIds, string[] notConsumableProductIds)
         {
             IAPBuyProductData2 iapBuyProductData = new IAPBuyProductData2();
             iapBuyProductData.productIds = productIds;
+            iapBuyProductData.notConsumableProductIds = notConsumableProductIds;
             string jsonData = JsonConvert.SerializeObject(iapBuyProductData);
 
             Debug.Log($"unity-  请求产品列表{jsonData}");
 
             RequestProducts(jsonData);
         }
+
 
         private void RequestProducts(string jsonData)
         {
@@ -91,11 +93,10 @@ namespace IAP
             javaObject.Call("RequestProduct", jsonData);
         }
 
-        public void BuyProduct(string productId, bool isConsumable)
+        public void BuyProduct(string productId)
         {
             IAPBuyProductData iapBuyProductData = new IAPBuyProductData();
             iapBuyProductData.productId = productId;
-            iapBuyProductData.isConsumable = isConsumable;
             string jsonData = JsonConvert.SerializeObject(iapBuyProductData);
             Debug.Log("unity-  [IAPBridge]BuyProduct：" + jsonData);
             if (Application.platform != RuntimePlatform.Android)
@@ -117,6 +118,5 @@ namespace IAP
                 return;
             javaObject.Call("CompleteUnfinishedProductList");
         }
-        
     }
 }

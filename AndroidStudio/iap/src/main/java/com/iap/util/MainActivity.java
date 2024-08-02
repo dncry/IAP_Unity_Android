@@ -44,7 +44,7 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
 
     private Map<String, ProductDetails> skuDetailsLiveDataMap2 = new HashMap<>();
     private Map<String, SkuDetails> skuDetailsLiveDataMap = new HashMap<>();
-    private boolean isConsumable;
+
 
     private boolean billingSetupComplete = false;
     // how long before the data source tries to reconnect to Google play
@@ -191,7 +191,6 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
                     }
                 }
             } else {
-
                 for (Purchase purchase : purchases) {
 
                     if (purchase.getSkus() == null || purchase.getSkus().size() == 0) {
@@ -212,10 +211,11 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
                         if (purchaseToken != null) break;
                     }
                 }
-
-
             }
 
+            boolean isConsumable = !isNotConsumableProductId(productId);
+
+            PrintLog("java-  isConsumable:" + isConsumable);
 
             if (isConsumable) {
                 if (purchaseToken == null) {
@@ -426,14 +426,13 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
 
 
     @Override
-    protected void OnBuyProduct(String productId, boolean isConsumable) {
-        super.OnBuyProduct(productId, isConsumable);
+    protected void OnBuyProduct(String productId) {
+        super.OnBuyProduct(productId);
 
         if (isNewStoreVersion) {
 
             ProductDetails skuDetails = skuDetailsLiveDataMap2.get(productId);
             if (null != skuDetails) {
-                this.isConsumable = isConsumable;
 
                 ArrayList<BillingFlowParams.ProductDetailsParams> productParamsArrayList = new ArrayList<>();
 
@@ -456,7 +455,6 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
 
             SkuDetails skuDetails = skuDetailsLiveDataMap.get(productId);
             if (null != skuDetails) {
-                this.isConsumable = isConsumable;
 
                 BillingFlowParams purchaseParams =
                         BillingFlowParams.newBuilder()
@@ -484,7 +482,7 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
                 builder.build(), new PurchasesResponseListener() {
                     @Override
                     public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
-                        onQueryPurchasesResponse1(billingResult,list);
+                        onQueryPurchasesResponse1(billingResult, list);
                     }
                 }
         );
@@ -509,7 +507,7 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
                 builder.build(), new PurchasesResponseListener() {
                     @Override
                     public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> list) {
-                        onQueryPurchasesResponse2(billingResult,list);
+                        onQueryPurchasesResponse2(billingResult, list);
                     }
                 }
         );
@@ -584,7 +582,9 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
         if (list != null && list.size() != 0) {
             for (int i = 0; i < list.size(); i++) {
 
-                if (!list.get(i).isAcknowledged()){continue;}
+                if (!list.get(i).isAcknowledged()) {
+                    continue;
+                }
 
                 List<String> list2 = list.get(i).getProducts();
 
@@ -616,7 +616,9 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
         if (list != null && list.size() != 0) {
             for (int i = 0; i < list.size(); i++) {
 
-                if (list.get(i).isAcknowledged()){continue;}
+                if (list.get(i).isAcknowledged()) {
+                    continue;
+                }
 
                 List<String> list2 = list.get(i).getProducts();
 

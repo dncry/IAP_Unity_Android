@@ -2,7 +2,7 @@
 <dependencies>
     <androidPackages>
         <androidPackage spec="com.android.billingclient:billing:6.0.1" />
-        <androidPackage spec="com.ow.iap:ow-iap:1.0.0" />
+        <androidPackage spec="com.ow.iap:ow-iap:+" />
     </androidPackages>
     <iosPods>
     </iosPods>
