@@ -116,7 +116,6 @@ public class BaseMainActivity {
                 try {
                     JSONObject jObject = new JSONObject(productJson);
                     String productId = jObject.getString("productId");
-                    boolean isConsumable = jObject.getBoolean("isConsumable");
                     OnBuyProduct(productId);
                 } catch (Exception e) {
                     PrintLog("java-  BuyProduct数据传输错误：" + e.getMessage());
