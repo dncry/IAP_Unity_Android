@@ -173,6 +173,11 @@ public class BaseMainActivity {
 
     protected void BuyCancel(String productId) {
         PrintLog("java-  购买取消：" + productId);
+
+        if (productId == null){
+            productId="";
+        }
+
         SendUnityMessage("ProductBuyCanceled", productId);
     }
 
