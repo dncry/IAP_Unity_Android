@@ -281,7 +281,7 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
             Purchase firstPurchase = purchaseList.get(0);
             return firstPurchase.getProducts().get(0);
         }
-        return null; // 返回null表示列表为空或null
+        return ""; // 返回null表示列表为空或null
     }
 
     private String GetResponseText(int responseCode) {
