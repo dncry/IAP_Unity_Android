@@ -14,6 +14,7 @@ import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
+import com.android.billingclient.api.PendingPurchasesParams;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.ProductDetailsResponseListener;
 import com.android.billingclient.api.Purchase;
@@ -22,6 +23,7 @@ import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
+import com.android.billingclient.api.QueryProductDetailsResult;
 import com.android.billingclient.api.QueryPurchaseHistoryParams;
 import com.android.billingclient.api.QueryPurchasesParams;
 import com.android.billingclient.api.SkuDetails;
@@ -334,7 +336,10 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
         if (googlePlayPublicKey.contains("CONSTRUCT_YOUR")) {
             throw new RuntimeException("Please put your app's public key in MainActivity.java. See README.");
         }
-        billingClient = BillingClient.newBuilder(CurrentActivity()).setListener(this).enablePendingPurchases().build();
+
+        billingClient = BillingClient.newBuilder(CurrentActivity()).setListener(this)
+                .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
+                .build();
         billingClient.startConnection(this);
 
     }
@@ -344,7 +349,8 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
         super.OnRequestProduct(productId);
 
         BillingResult billingResult = billingClient.isFeatureSupported(BillingClient.FeatureType.PRODUCT_DETAILS);
-        isNewStoreVersion = billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK;
+        //isNewStoreVersion = billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK;
+        isNewStoreVersion = true;
 
         if (isNewStoreVersion) {
 
@@ -372,14 +378,14 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
 
             billingClient.queryProductDetailsAsync(params, new ProductDetailsResponseListener() {
                 @Override
-                public void onProductDetailsResponse(@NonNull BillingResult billingResult, @NonNull List<ProductDetails> list) {
+                public void onProductDetailsResponse(@NonNull BillingResult billingResult,  @NonNull QueryProductDetailsResult list) {
 
                     int responseCode = billingResult.getResponseCode();
                     PrintLog("java-  onSkuDetailsResponse:" + billingResult + " code:" + GetResponseText(responseCode));
 
                     switch (responseCode) {
                         case BillingClient.BillingResponseCode.OK:
-                            ReceiveProducts2(list);
+                            ReceiveProducts2(list.getProductDetailsList());
                             break;
                         default:
                             RequestProductsFail("Failed to query inventory: " + billingResult.getDebugMessage());
@@ -389,36 +395,35 @@ public class MainActivity extends BaseMainActivity implements PurchasesUpdatedLi
                 }
             });
 
-
         } else {
 
             PrintLog("java-  IAP使用旧版Store");
 
-            List<String> skuList = new ArrayList<>();
-            skuList.addAll(Arrays.asList(productId));
-            cacheRequestList = productId;
-
-            SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-            params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
-            billingClient.querySkuDetailsAsync(params.build(),
-                    new SkuDetailsResponseListener() {
-                        @Override
-                        public void onSkuDetailsResponse(BillingResult billingResult,
-                                                         List<SkuDetails> skuDetailsList) {
-                            int responseCode = billingResult.getResponseCode();
-                            PrintLog("java-  onSkuDetailsResponse:" + billingResult + " code:" + GetResponseText(responseCode));
-
-                            switch (responseCode) {
-                                case BillingClient.BillingResponseCode.OK:
-                                    ReceiveProducts(skuDetailsList);
-                                    break;
-                                default:
-                                    RequestProductsFail("Failed to query inventory: " + billingResult.getDebugMessage());
-                                    PrintLog("java-  Failed to query inventory: " + billingResult.getDebugMessage());
-                                    break;
-                            }
-                        }
-                    });
+//            List<String> skuList = new ArrayList<>();
+//            skuList.addAll(Arrays.asList(productId));
+//            cacheRequestList = productId;
+//
+//            SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+//            params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
+//            billingClient.querySkuDetailsAsync(params.build(),
+//                    new SkuDetailsResponseListener() {
+//                        @Override
+//                        public void onSkuDetailsResponse(BillingResult billingResult,
+//                                                         List<SkuDetails> skuDetailsList) {
+//                            int responseCode = billingResult.getResponseCode();
+//                            PrintLog("java-  onSkuDetailsResponse:" + billingResult + " code:" + GetResponseText(responseCode));
+//
+//                            switch (responseCode) {
+//                                case BillingClient.BillingResponseCode.OK:
+//                                    ReceiveProducts(skuDetailsList);
+//                                    break;
+//                                default:
+//                                    RequestProductsFail("Failed to query inventory: " + billingResult.getDebugMessage());
+//                                    PrintLog("java-  Failed to query inventory: " + billingResult.getDebugMessage());
+//                                    break;
+//                            }
+//                        }
+//                    });
         }
 
 

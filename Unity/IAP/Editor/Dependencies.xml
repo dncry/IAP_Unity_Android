@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <dependencies>
     <androidPackages>
-        <androidPackage spec="com.android.billingclient:billing:6.0.1" />
-        <androidPackage spec="com.ow.iap:ow-iap:+" />
+        <androidPackage spec="com.android.billingclient:billing:8.0.0" />
+        <androidPackage spec="com.ow.iap:ow-iap:1.0.8" />
     </androidPackages>
     <iosPods>
     </iosPods>
