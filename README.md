@@ -70,7 +70,7 @@
 
 6.请求的所有商品信息:  `IAPReceiveMessage.productInfoData`
 
- 	        //接收到产品信息
+ 	        //接收到产品信息的回调 
 	        void OnProductInfoReceived(IAPProductInfoData info)
 	        {
 	            Debug.Log("[IAPMessage]Unity接收到商品信息个数:" + info.skuItems.Count);
