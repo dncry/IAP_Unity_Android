@@ -69,3 +69,17 @@
 5.购买回调:  `IAPReceiveMessage` 类中
 
 6.请求的所有商品信息:  `IAPReceiveMessage.productInfoData`
+
+ 	        //接收到产品信息
+	        void OnProductInfoReceived(IAPProductInfoData info)
+	        {
+	            Debug.Log("[IAPMessage]Unity接收到商品信息个数:" + info.skuItems.Count);
+
+	            IAPReceiveMessage.getInstance().productInfoData = info;
+	
+	            foreach (var skuItem in IAPReceiveMessage.getInstance().productInfoData.skuItems)
+	            {
+	                Debug.Log("[IAPMessage]Unity接收到商品信息:" + skuItem.productId);
+	            }
+	        }
+
